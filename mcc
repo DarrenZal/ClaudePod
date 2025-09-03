@@ -113,6 +113,15 @@ new_task() {
     check_git_repo
     init_mcc
     
+    # Check if repository has any commits
+    if ! git rev-parse --verify HEAD >/dev/null 2>&1; then
+        log_error "Repository has no commits yet"
+        log_error "Please make an initial commit first:"
+        log_error "  git add ."
+        log_error "  git commit -m 'Initial commit'"
+        exit 1
+    fi
+    
     local branch_name
     branch_name=$(generate_branch_name "$task_name")
     local worktree_dir="../${task_name}-worktree"
@@ -128,10 +137,12 @@ new_task() {
     log_info "Creating worktree for task: $task_name"
     log_info "Branch: $branch_name"
     log_info "Directory: $worktree_dir"
+    log_info "Base branch: $main_branch"
     
     # Create worktree
     if ! git worktree add -b "$branch_name" "$worktree_dir" "$main_branch"; then
         log_error "Failed to create worktree"
+        log_error "Make sure the base branch '$main_branch' has commits"
         exit 1
     fi
     
