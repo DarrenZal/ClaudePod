@@ -33,19 +33,36 @@ Multi-Claude-Code (mcc) allows you to run multiple Claude Code instances simulta
 ### Basic Workflow
 
 ```bash
-# Start a new task (creates worktree + launches Claude)
+# 1. Start a new task (creates worktree + opens Terminal)
 mcc new user-authentication
 
-# See all active tasks  
-mcc list
+# This creates:
+# - New branch: work/user-authentication
+# - Worktree: ../user-authentication-worktree/
+# - Opens Terminal in the worktree directory
+# - TASK.md file for tracking progress
 
-# Save progress and context for handoff
+# 2. In the new Terminal window that opens:
+# You'll be in the worktree directory on the new branch
+claude          # Launch Claude Code (or your editor)
+# OR
+code .          # VS Code
+vim .           # Vim, etc.
+
+# 3. Work on your task, make commits as you go
+git add .
+git commit -m "Implement login form"
+
+# 4. Save progress and context for handoff (optional)
 mcc handoff user-authentication "Login flow completed, working on logout"
 
-# Complete task (merge & cleanup)
+# 5. See all active tasks from anywhere
+mcc list
+
+# 6. Complete task (merge & cleanup)
 mcc done user-authentication
 
-# Check overall status
+# 7. Check overall status anytime
 mcc status
 ```
 
@@ -103,14 +120,22 @@ Creates a new development task with:
 - Isolated git worktree in `../<task-name>-worktree/`
 - New branch with `work/` prefix
 - TASK.md file for progress tracking
-- New Terminal window with Claude Code launched
+- New Terminal window that attempts to launch Claude Code
+
+**What happens:**
+1. Creates isolated worktree directory
+2. Sets up new branch from your main/master branch
+3. Opens new Terminal window and navigates to worktree
+4. Attempts to run `claude-code` (install Claude Code CLI first)
+5. If Claude Code CLI isn't installed, you can manually run `claude` or your preferred editor
 
 **Example:**
 ```bash
 mcc new user-profile
 # Creates: work/user-profile branch
 # Directory: ../user-profile-worktree/  
-# Opens: New Terminal with Claude Code
+# Opens: New Terminal in worktree directory
+# Run: claude, code ., vim ., etc. to start working
 ```
 
 #### `mcc list`
@@ -353,12 +378,24 @@ mcc new task-name-v2
 ```
 
 #### "Claude Code command not found"
-```bash
-# Install Claude Code CLI
-npm install -g claude-code  # or your installation method
+This is expected if you haven't installed the Claude Code CLI yet.
 
-# Or update mcc script with correct path
-CLAUDE_CMD="/path/to/your/claude-code"
+**Solutions:**
+```bash
+# Option 1: Install Claude Code CLI (when available)
+# Follow instructions at https://docs.anthropic.com/en/docs/claude-code
+
+# Option 2: Use whatever command launches Claude Code for you
+# In the Terminal that opens, just run:
+claude        # If you have this command
+code .        # VS Code
+vim .         # Vim
+subl .        # Sublime Text
+# etc.
+
+# Option 3: Update mcc script with your command
+# Edit the CLAUDE_CMD variable in the mcc script:
+CLAUDE_CMD="claude"  # or whatever your command is
 ```
 
 #### "Merge conflicts"
