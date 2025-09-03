@@ -64,7 +64,10 @@ init_mcc() {
 # Get the main branch name
 get_main_branch() {
     # Try to get default branch from origin first
-    if git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@'; then
+    local origin_default
+    origin_default=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+    if [[ -n "$origin_default" ]]; then
+        echo "$origin_default"
         return
     fi
     
