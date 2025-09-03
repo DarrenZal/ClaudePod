@@ -1,10 +1,10 @@
-# Multi-Claude-Code (mcc) 🚀
+# ClaudePod 🚀
 
 A comprehensive workflow system for managing multiple Claude Code instances working on parallel development tasks using git worktrees.
 
 ## Overview
 
-Multi-Claude-Code (mcc) allows you to run multiple Claude Code instances simultaneously, each working on different features in isolated git worktrees. This enables parallel development, reduces context switching, and maintains clean separation between different tasks.
+ClaudePod allows you to run multiple Claude Code instances simultaneously, each working on different features in isolated git worktrees. This enables parallel development, reduces context switching, and maintains clean separation between different tasks.
 
 ### Key Features
 
@@ -20,23 +20,23 @@ Multi-Claude-Code (mcc) allows you to run multiple Claude Code instances simulta
 
 ### Installation
 
-1. **Clone or download** the mcc files to your project directory
+1. **Clone or download** the pod files to your project directory
 2. **Run the setup script**:
    ```bash
    ./setup.sh
    ```
 3. **Start your first task**:
    ```bash
-   mcc new auth-system
+   pod new auth-system
    ```
 
 ### Basic Workflow
 
 ```bash
 # 1. Start a new task (creates worktree + opens Terminal)
-mcc new user-authentication
+pod new user-authentication
 # OR for dangerous permissions:
-# mcc yolo user-authentication
+# pod yolo user-authentication
 
 # This creates:
 # - New branch: work/user-authentication
@@ -56,16 +56,16 @@ git add .
 git commit -m "Implement login form"
 
 # 4. Save progress and context for handoff (optional)
-mcc handoff user-authentication "Login flow completed, working on logout"
+pod handoff user-authentication "Login flow completed, working on logout"
 
 # 5. See all active tasks from anywhere
-mcc list
+pod list
 
 # 6. Complete task (merge & cleanup)
-mcc done user-authentication
+pod done user-authentication
 
 # 7. Check overall status anytime
-mcc status
+pod status
 ```
 
 ## Installation
@@ -82,21 +82,21 @@ mcc status
 ```bash
 git clone <your-project> project-name
 cd project-name
-curl -O https://raw.githubusercontent.com/your-repo/mcc/main/setup.sh
+curl -O https://raw.githubusercontent.com/your-repo/pod/main/setup.sh
 chmod +x setup.sh
 ./setup.sh
 ```
 
 #### Option 2: Manual Setup
-1. Download `mcc` and `setup.sh` to your project directory
-2. Make executable: `chmod +x mcc setup.sh`
+1. Download `pod` and `setup.sh` to your project directory
+2. Make executable: `chmod +x pod setup.sh`
 3. Run setup: `./setup.sh`
 
 #### Option 3: Global Installation
 ```bash
 # Clone to a dedicated directory
-git clone <mcc-repo> ~/mcc
-cd ~/mcc
+git clone <pod-repo> ~/pod
+cd ~/pod
 ./setup.sh
 # Choose option 1 or 2 to add to PATH
 ```
@@ -107,19 +107,19 @@ cd ~/mcc
 
 | Command | Alias | Description | Example |
 |---------|-------|-------------|---------|
-| `mcc new <task>` | `n` | Create new worktree and launch Claude | `mcc new auth-system` |
-| `mcc yolo <task>` | | Create task with --dangerously-skip-permissions | `mcc yolo risky-task` |
-| `mcc list` | `ls` | List all active tasks | `mcc list` |
-| `mcc status` | `st` | Show detailed status overview | `mcc status` |
-| `mcc done <task>` | `d` | Complete, merge, and cleanup task | `mcc done auth-system` |
-| `mcc handoff <task> [msg]` | `h` | Create context handoff commit | `mcc handoff auth-system "Login working"` |
-| `mcc cleanup` | `c` | Clean up orphaned worktrees | `mcc cleanup` |
-| `mcc update` | `up` | Update mcc to latest version | `mcc update` |
-| `mcc help` | | Show help and usage | `mcc help` |
+| `pod new <task>` | `n` | Create new worktree and launch Claude | `pod new auth-system` |
+| `pod yolo <task>` | | Create task with --dangerously-skip-permissions | `pod yolo risky-task` |
+| `pod list` | `ls` | List all active tasks | `pod list` |
+| `pod status` | `st` | Show detailed status overview | `pod status` |
+| `pod done <task>` | `d` | Complete, merge, and cleanup task | `pod done auth-system` |
+| `pod handoff <task> [msg]` | `h` | Create context handoff commit | `pod handoff auth-system "Login working"` |
+| `pod cleanup` | `c` | Clean up orphaned worktrees | `pod cleanup` |
+| `pod update` | `up` | Update pod to latest version | `pod update` |
+| `pod help` | | Show help and usage | `pod help` |
 
 ### Command Details
 
-#### `mcc new <task-name>`
+#### `pod new <task-name>`
 Creates a new development task with:
 - Isolated git worktree in `../<task-name>-worktree/`
 - New branch with `work/` prefix
@@ -135,41 +135,41 @@ Creates a new development task with:
 
 **Example:**
 ```bash
-mcc new user-profile
+pod new user-profile
 # Creates: work/user-profile branch
 # Directory: ../user-profile-worktree/  
 # Opens: New Terminal in worktree directory
 # Runs: claude (or your configured editor)
 ```
 
-#### `mcc yolo <task-name>`
+#### `pod yolo <task-name>`
 Special mode that creates a task and launches Claude with `--dangerously-skip-permissions`. Use this when you need Claude to have broader file system access.
 
 **⚠️ Warning:** YOLO mode skips permission checks - use carefully!
 
 **Example:**
 ```bash
-mcc yolo system-config
+pod yolo system-config
 # Creates: work/system-config branch  
 # Directory: ../system-config-worktree/
 # Opens: Terminal with "claude --dangerously-skip-permissions"
 # Shows: Warning about YOLO mode
 ```
 
-#### `mcc list`
+#### `pod list`
 Shows all active tasks with status indicators:
 - 🟢 **Active**: Worktree exists, no changes
 - 🟡 **Working**: Uncommitted changes present  
 - 🔵 **Ready**: Commits ready to merge
 
-#### `mcc status`
+#### `pod status`
 Comprehensive overview showing:
 - Current branch
 - All git worktrees
 - Active task details
 - Branch relationships
 
-#### `mcc done <task-name>`
+#### `pod done <task-name>`
 Completes a task by:
 1. Checking for uncommitted changes
 2. Switching to main branch
@@ -178,7 +178,7 @@ Completes a task by:
 5. Cleaning up worktree and branch
 6. Updating task tracking
 
-#### `mcc handoff <task-name> [message]`
+#### `pod handoff <task-name> [message]`
 Creates a handoff commit for context sharing:
 - Stages all current changes
 - Creates commit with handoff message
@@ -191,54 +191,54 @@ Creates a handoff commit for context sharing:
 
 ```bash
 # Morning: Start multiple parallel tasks
-mcc new user-authentication    # Claude 1: Auth system
-mcc new product-catalog       # Claude 2: Product features  
-mcc new payment-integration   # Claude 3: Payment system
+pod new user-authentication    # Claude 1: Auth system
+pod new product-catalog       # Claude 2: Product features  
+pod new payment-integration   # Claude 3: Payment system
 
 # Check what's active
-mcc list
+pod list
 # 🟢 user-authentication (work/user-authentication)
 # 🟢 product-catalog (work/product-catalog)  
 # 🟢 payment-integration (work/payment-integration)
 
 # Afternoon: Save progress and switch focus
-mcc handoff user-authentication "Login/logout complete, need password reset"
-mcc handoff product-catalog "CRUD operations done, working on search"
+pod handoff user-authentication "Login/logout complete, need password reset"
+pod handoff product-catalog "CRUD operations done, working on search"
 
 # Evening: Complete finished work
-mcc done payment-integration   # First completed feature
-mcc status                     # Check remaining work
+pod done payment-integration   # First completed feature
+pod status                     # Check remaining work
 ```
 
 ### Scenario 2: Sequential Development
 
 ```bash
 # Start with architecture
-mcc new core-architecture
+pod new core-architecture
 
 # Once architecture is ready, start dependent tasks
-mcc handoff core-architecture "Database schema and API structure defined"
-mcc new api-implementation     # Based on architecture
-mcc new frontend-components    # Can work in parallel
+pod handoff core-architecture "Database schema and API structure defined"
+pod new api-implementation     # Based on architecture
+pod new frontend-components    # Can work in parallel
 
 # Complete in dependency order
-mcc done core-architecture
-mcc done api-implementation  
-mcc done frontend-components
+pod done core-architecture
+pod done api-implementation  
+pod done frontend-components
 ```
 
 ### Scenario 3: Bug Fix Workflow
 
 ```bash
 # Urgent bug fix
-mcc new fix-login-issue
+pod new fix-login-issue
 
 # Work on fix, test, document
-mcc handoff fix-login-issue "Identified root cause: session timeout"
-mcc handoff fix-login-issue "Fix implemented, testing edge cases"
+pod handoff fix-login-issue "Identified root cause: session timeout"
+pod handoff fix-login-issue "Fix implemented, testing edge cases"
 
 # Complete when verified
-mcc done fix-login-issue
+pod done fix-login-issue
 ```
 
 ## Task Organization
@@ -280,11 +280,11 @@ Next: implement password reset email system."
 
 ```
 project-root/
-├── mcc                          # Main script
+├── pod                          # Main script
 ├── setup.sh                    # Setup script  
 ├── README.md                   # This file
 ├── roadmap.md                  # Project planning (created by setup)
-├── .mcc/                       # MCC data directory
+├── .pod/                       # MCC data directory
 │   └── active_tasks.txt        # Task tracking
 ├── .git/                       # Main repository
 │   └── worktrees/             # Worktree metadata
@@ -305,7 +305,7 @@ project-root/
 By default, branches use the `work/` prefix. To customize:
 
 ```bash
-# Edit mcc script
+# Edit pod script
 WORKTREE_PREFIX="feature/"  # Changes to feature/task-name
 WORKTREE_PREFIX=""         # No prefix: just task-name
 ```
@@ -340,7 +340,7 @@ vim ../task-name-worktree/
 If your Claude Code installation has a different command name:
 
 ```bash
-# Edit mcc script, change:
+# Edit pod script, change:
 CLAUDE_CMD="claude-code"
 # To:
 CLAUDE_CMD="your-custom-command"
@@ -366,7 +366,7 @@ CLAUDE_CMD="your-custom-command"
 
 ```bash
 # Before switching focus
-mcc handoff current-task "Current status and next steps"
+pod handoff current-task "Current status and next steps"
 
 # After resuming  
 git log --oneline -5  # Review recent commits
@@ -392,7 +392,7 @@ rm -rf ../task-name-worktree/
 git worktree prune
 
 # Or use different task name
-mcc new task-name-v2
+pod new task-name-v2
 ```
 
 #### "claude: command not found"
@@ -412,8 +412,8 @@ vim .         # Vim
 subl .        # Sublime Text
 # etc.
 
-# Option 3: Update mcc script with your preferred command
-# Edit the CLAUDE_CMD variable in the mcc script:
+# Option 3: Update pod script with your preferred command
+# Edit the CLAUDE_CMD variable in the pod script:
 CLAUDE_CMD="code"     # for VS Code
 CLAUDE_CMD="subl"     # for Sublime Text
 # etc.
@@ -421,12 +421,12 @@ CLAUDE_CMD="subl"     # for Sublime Text
 
 #### "Merge conflicts"
 ```bash
-# During mcc done, if conflicts occur:
+# During pod done, if conflicts occur:
 git status                    # See conflicted files
 # Resolve conflicts manually
 git add resolved-files
 git commit -m "Resolve merge conflicts"
-mcc done task-name           # Retry
+pod done task-name           # Retry
 ```
 
 #### "Terminal window not opening"
@@ -450,8 +450,8 @@ git worktree remove ../task-worktree/ --force
 git branch -D work/task-name
 
 # Reset active tasks tracking
-rm .mcc/active_tasks.txt
-mcc list  # Rebuilds tracking
+rm .pod/active_tasks.txt
+pod list  # Rebuilds tracking
 ```
 
 ### Debug Mode
@@ -459,7 +459,7 @@ mcc list  # Rebuilds tracking
 For troubleshooting, add debug output:
 
 ```bash
-# Edit mcc script, add after #!/bin/bash:
+# Edit pod script, add after #!/bin/bash:
 set -x  # Enable debug mode
 ```
 
@@ -476,10 +476,10 @@ export MCC_TERMINAL_APP="iTerm"  # Future: other terminal support
 
 ### Per-Project Settings
 
-Create `.mccrc` in your project root:
+Create `.podrc` in your project root:
 
 ```bash
-# .mccrc
+# .podrc
 WORKTREE_PREFIX="epic/"
 CLAUDE_CMD="claude-dev"
 ```
@@ -489,7 +489,7 @@ CLAUDE_CMD="claude-dev"
 ### CI/CD Integration
 
 ```yaml
-# .github/workflows/mcc-check.yml
+# .github/workflows/pod-check.yml
 name: MCC Branch Check
 on: [push, pull_request]
 jobs:
@@ -512,7 +512,7 @@ Future integrations could include:
 
 ## FAQ
 
-**Q: Can I use mcc with existing branches?**  
+**Q: Can I use pod with existing branches?**  
 A: MCC creates new branches with the `work/` prefix. To use existing branches, manually create worktrees with `git worktree add`.
 
 **Q: What happens if Claude Code crashes?**  
@@ -525,7 +525,7 @@ A: Currently MCC assumes one main branch. For multiple bases, manually specify: 
 A: All work is in git. Use `git push origin work/branch-name` to backup individual branches.
 
 **Q: Can I customize the TASK.md template?**  
-A: Yes, edit the `new_task()` function in the mcc script to customize the template.
+A: Yes, edit the `new_task()` function in the pod script to customize the template.
 
 ## Contributing
 
@@ -564,7 +564,7 @@ A: Yes, edit the `new_task()` function in the mcc script to customize the templa
 
 ## Support
 
-- **Documentation**: This README and inline help (`mcc help`)
+- **Documentation**: This README and inline help (`pod help`)
 - **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
 

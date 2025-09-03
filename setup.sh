@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Multi-Claude-Code Setup Script
-# Configures the mcc workflow system
+# ClaudePod Setup Script
+# Configures the pod workflow system
 
 set -e
 
@@ -71,24 +71,24 @@ check_prerequisites() {
     # Check for claude-code (optional warning)
     if ! command -v claude-code &> /dev/null; then
         log_warning "Claude Code CLI not found in PATH"
-        log_warning "Make sure to install Claude Code CLI before using mcc"
+        log_warning "Make sure to install Claude Code CLI before using pod"
         log_warning "See: https://docs.anthropic.com/en/docs/claude-code"
     fi
     
     log_success "Prerequisites check complete"
 }
 
-# Make mcc executable
+# Make pod executable
 setup_executable() {
-    log_info "Setting up mcc executable..."
+    log_info "Setting up pod executable..."
     
-    if [[ ! -f "mcc" ]]; then
-        log_error "mcc script not found in current directory"
+    if [[ ! -f "pod" ]]; then
+        log_error "pod script not found in current directory"
         exit 1
     fi
     
-    chmod +x mcc
-    log_success "Made mcc executable"
+    chmod +x pod
+    log_success "Made pod executable"
 }
 
 # Optionally add to PATH
@@ -99,13 +99,13 @@ setup_path() {
     echo ""
     echo -e "${YELLOW}PATH Setup${NC}"
     echo "=========="
-    echo "Would you like to add mcc to your PATH so you can run it from anywhere?"
+    echo "Would you like to add pod to your PATH so you can run it from anywhere?"
     echo "This will add the current directory ($current_dir) to your PATH."
     echo ""
     echo "Options:"
     echo "  1) Add to ~/.zshrc (recommended for zsh users)"
     echo "  2) Add to ~/.bash_profile (for bash users)"  
-    echo "  3) Skip PATH setup (you'll need to use full path: $current_dir/mcc)"
+    echo "  3) Skip PATH setup (you'll need to use full path: $current_dir/pod)"
     echo ""
     
     read -p "Enter your choice (1-3): " choice
@@ -115,10 +115,10 @@ setup_path() {
             local zshrc="$HOME/.zshrc"
             if ! grep -q "$current_dir" "$zshrc" 2>/dev/null; then
                 echo "" >> "$zshrc"
-                echo "# Multi-Claude-Code (mcc)" >> "$zshrc"
+                echo "# ClaudePod (pod)" >> "$zshrc"
                 echo "export PATH=\"$current_dir:\$PATH\"" >> "$zshrc"
                 log_success "Added to ~/.zshrc"
-                log_info "Run 'source ~/.zshrc' or restart your terminal to use 'mcc' command"
+                log_info "Run 'source ~/.zshrc' or restart your terminal to use 'pod' command"
             else
                 log_warning "PATH already contains $current_dir"
             fi
@@ -127,17 +127,17 @@ setup_path() {
             local bash_profile="$HOME/.bash_profile"
             if ! grep -q "$current_dir" "$bash_profile" 2>/dev/null; then
                 echo "" >> "$bash_profile"
-                echo "# Multi-Claude-Code (mcc)" >> "$bash_profile"
+                echo "# ClaudePod (pod)" >> "$bash_profile"
                 echo "export PATH=\"$current_dir:\$PATH\"" >> "$bash_profile"
                 log_success "Added to ~/.bash_profile"
-                log_info "Run 'source ~/.bash_profile' or restart your terminal to use 'mcc' command"
+                log_info "Run 'source ~/.bash_profile' or restart your terminal to use 'pod' command"
             else
                 log_warning "PATH already contains $current_dir"
             fi
             ;;
         3)
             log_info "Skipping PATH setup"
-            log_info "Use full path to run: $current_dir/mcc"
+            log_info "Use full path to run: $current_dir/pod"
             ;;
         *)
             log_warning "Invalid choice. Skipping PATH setup"
@@ -185,12 +185,12 @@ create_roadmap_template() {
 ## Task Ideas for Multi-Claude Development
 
 ### Independent Tasks (Suitable for parallel development)
-- [ ] `mcc new user-auth` - User authentication system
-- [ ] `mcc new api-endpoints` - REST API development  
-- [ ] `mcc new frontend-ui` - UI components
-- [ ] `mcc new database-schema` - Database design
-- [ ] `mcc new test-suite` - Comprehensive testing
-- [ ] `mcc new documentation` - Project documentation
+- [ ] `pod new user-auth` - User authentication system
+- [ ] `pod new api-endpoints` - REST API development  
+- [ ] `pod new frontend-ui` - UI components
+- [ ] `pod new database-schema` - Database design
+- [ ] `pod new test-suite` - Comprehensive testing
+- [ ] `pod new documentation` - Project documentation
 
 ### Sequential Tasks (Require coordination)
 - [ ] Core architecture (complete first)
@@ -202,17 +202,17 @@ create_roadmap_template() {
 
 ## Multi-Claude Workflow Tips
 
-1. **Start Independent Tasks First**: Use `mcc new <task>` for features that can be developed in isolation
-2. **Use Handoffs**: Run `mcc handoff <task> "message"` to save context when switching or pausing work
+1. **Start Independent Tasks First**: Use `pod new <task>` for features that can be developed in isolation
+2. **Use Handoffs**: Run `pod handoff <task> "message"` to save context when switching or pausing work
 3. **Coordinate Dependencies**: Plan task order to minimize merge conflicts
-4. **Regular Status checks**: Use `mcc status` to see overview of all active work
-5. **Clean Merges**: Complete tasks with `mcc done <task>` when ready
+4. **Regular Status checks**: Use `pod status` to see overview of all active work
+5. **Clean Merges**: Complete tasks with `pod done <task>` when ready
 
 ## Task Templates
 
 ### New Feature Template
 ```bash
-mcc new feature-name
+pod new feature-name
 # Creates:
 # - New branch: work/feature-name  
 # - Isolated worktree
@@ -222,7 +222,7 @@ mcc new feature-name
 
 ### Bug Fix Template  
 ```bash
-mcc new fix-issue-123
+pod new fix-issue-123
 # Focus the Claude instance on:
 # - Understanding the bug
 # - Creating reproduction test
@@ -250,9 +250,9 @@ init_git_repo() {
             
             # Create initial commit
             git add .
-            git commit -m "Initial Multi-Claude-Code setup
+            git commit -m "Initial ClaudePod setup
 
-- Added mcc workflow management script
+- Added pod workflow management script
 - Added setup.sh installer  
 - Added roadmap.md template
 - Ready for multi-Claude development"
@@ -260,7 +260,7 @@ init_git_repo() {
             log_success "Created initial commit"
         else
             log_info "Skipping git initialization"
-            log_warning "Note: mcc requires a git repository to function"
+            log_warning "Note: pod requires a git repository to function"
         fi
     else
         log_success "Git repository already initialized"
@@ -273,8 +273,8 @@ create_gitignore() {
         log_info "Creating .gitignore..."
         
         cat > .gitignore << 'EOF'
-# Multi-Claude-Code
-.mcc/
+# ClaudePod
+.pod/
 
 # macOS
 .DS_Store
@@ -345,19 +345,19 @@ show_completion() {
 EOF
     echo -e "${NC}"
     
-    echo -e "${CYAN}Multi-Claude-Code Setup Complete!${NC}"
+    echo -e "${CYAN}ClaudePod Setup Complete!${NC}"
     echo "=================================="
     echo ""
     echo -e "${PURPLE}Next Steps:${NC}"
     echo "1. Review and customize roadmap.md for your project"
-    echo "2. Start your first task: $(which mcc >/dev/null && echo 'mcc' || echo './mcc') new <task-name>"
-    echo "3. Check status anytime: $(which mcc >/dev/null && echo 'mcc' || echo './mcc') status"
+    echo "2. Start your first task: $(which pod >/dev/null && echo 'pod' || echo './pod') new <task-name>"
+    echo "3. Check status anytime: $(which pod >/dev/null && echo 'pod' || echo './pod') status"
     echo ""
     echo -e "${PURPLE}Quick Start Example:${NC}"
-    echo "  $(which mcc >/dev/null && echo 'mcc' || echo './mcc') new auth-system     # Start new authentication task"
-    echo "  $(which mcc >/dev/null && echo 'mcc' || echo './mcc') list              # See active tasks"  
-    echo "  $(which mcc >/dev/null && echo 'mcc' || echo './mcc') handoff auth-system 'Login working'  # Save progress"
-    echo "  $(which mcc >/dev/null && echo 'mcc' || echo './mcc') done auth-system   # Complete and merge"
+    echo "  $(which pod >/dev/null && echo 'pod' || echo './pod') new auth-system     # Start new authentication task"
+    echo "  $(which pod >/dev/null && echo 'pod' || echo './pod') list              # See active tasks"  
+    echo "  $(which pod >/dev/null && echo 'pod' || echo './pod') handoff auth-system 'Login working'  # Save progress"
+    echo "  $(which pod >/dev/null && echo 'pod' || echo './pod') done auth-system   # Complete and merge"
     echo ""
     echo -e "${PURPLE}Key Features:${NC}"
     echo "  ✅ Git worktree isolation for parallel development"
@@ -367,7 +367,7 @@ EOF
     echo "  ✅ Clean merge and cleanup workflow"
     echo ""
     echo -e "${YELLOW}Need Help?${NC}"
-    echo "  $(which mcc >/dev/null && echo 'mcc' || echo './mcc') help               # Show all commands"
+    echo "  $(which pod >/dev/null && echo 'pod' || echo './pod') help               # Show all commands"
     echo "  Read README.md for detailed documentation"
     echo ""
     echo -e "${GREEN}Happy Multi-Claude Development! 🚀${NC}"
@@ -377,7 +377,7 @@ EOF
 main() {
     print_header
     
-    echo "Setting up Multi-Claude-Code workflow system..."
+    echo "Setting up ClaudePod workflow system..."
     echo ""
     
     check_prerequisites

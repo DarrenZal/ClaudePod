@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Multi-Claude-Code (mcc) - Manage parallel Claude development tasks with git worktrees
+# ClaudePod - Manage parallel Claude development tasks with git worktrees
 # Version: 1.0.0
 
 set -e
@@ -15,7 +15,7 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Configuration
-MCC_DIR=".mcc"
+POD_DIR=".pod"
 WORKTREE_PREFIX="work/"
 CLAUDE_CMD="claude"
 CLAUDE_ARGS=""
@@ -49,15 +49,15 @@ check_git_repo() {
     fi
 }
 
-# Initialize MCC structure
-init_mcc() {
-    if [[ ! -d "$MCC_DIR" ]]; then
-        mkdir -p "$MCC_DIR"
-        log_info "Created $MCC_DIR directory"
+# Initialize Pod structure
+init_pod() {
+    if [[ ! -d "$POD_DIR" ]]; then
+        mkdir -p "$POD_DIR"
+        log_info "Created $POD_DIR directory"
     fi
     
-    if [[ ! -f "$MCC_DIR/active_tasks.txt" ]]; then
-        touch "$MCC_DIR/active_tasks.txt"
+    if [[ ! -f "$POD_DIR/active_tasks.txt" ]]; then
+        touch "$POD_DIR/active_tasks.txt"
         log_info "Created active tasks tracking file"
     fi
 }
@@ -111,7 +111,7 @@ new_task() {
     
     if [[ -z "$task_name" ]]; then
         log_error "Task name is required"
-        echo "Usage: mcc new <task-name>"
+        echo "Usage: pod new <task-name>"
         exit 1
     fi
     
@@ -123,7 +123,7 @@ new_task() {
     fi
     
     check_git_repo
-    init_mcc
+    init_pod
     
     # Check if repository has any commits
     if ! git rev-parse --verify HEAD >/dev/null 2>&1; then
@@ -185,14 +185,14 @@ new_task() {
 EOF
     
     # Add task to active tasks
-    echo "$task_name|$branch_name|$worktree_dir|$(date '+%Y-%m-%d %H:%M:%S')" >> "$MCC_DIR/active_tasks.txt"
+    echo "$task_name|$branch_name|$worktree_dir|$(date '+%Y-%m-%d %H:%M:%S')" >> "$POD_DIR/active_tasks.txt"
     
     # Open new Terminal window with Claude Code
     local abs_worktree_dir
     abs_worktree_dir=$(cd "$worktree_dir" && pwd)
     
     # For testing, we'll simulate the Terminal launch
-    if [[ "${MCC_TEST_MODE:-}" == "1" ]]; then
+    if [[ "${POD_TEST_MODE:-}" == "1" ]]; then
         log_info "TEST MODE: Would launch Terminal with command:"
         log_info "cd '$abs_worktree_dir' && $CLAUDE_CMD $claude_args"
     else
@@ -212,9 +212,9 @@ EOF
 # List active tasks
 list_tasks() {
     check_git_repo
-    init_mcc
+    init_pod
     
-    if [[ ! -s "$MCC_DIR/active_tasks.txt" ]]; then
+    if [[ ! -s "$POD_DIR/active_tasks.txt" ]]; then
         log_info "No active tasks"
         return 0
     fi
@@ -246,13 +246,13 @@ list_tasks() {
             echo -e "   Created: $created_date"
             echo ""
         fi
-    done < "$MCC_DIR/active_tasks.txt"
+    done < "$POD_DIR/active_tasks.txt"
 }
 
 # Show detailed status
 show_status() {
     check_git_repo
-    init_mcc
+    init_pod
     
     echo -e "${CYAN}Multi-Claude-Code Status${NC}"
     echo "======================="
@@ -287,19 +287,19 @@ done_task() {
     
     if [[ -z "$task_name" ]]; then
         log_error "Task name is required"
-        echo "Usage: mcc done <task-name>"
+        echo "Usage: pod done <task-name>"
         exit 1
     fi
     
     check_git_repo
-    init_mcc
+    init_pod
     
     # Find task in active tasks
     local task_line
     local branch_name
     local worktree_dir
     
-    if ! task_line=$(grep "^$task_name|" "$MCC_DIR/active_tasks.txt"); then
+    if ! task_line=$(grep "^$task_name|" "$POD_DIR/active_tasks.txt"); then
         log_error "Task '$task_name' not found in active tasks"
         exit 1
     fi
@@ -317,7 +317,7 @@ done_task() {
     # Check for uncommitted changes
     if (cd "$worktree_dir" && git status --porcelain | grep -q .); then
         log_warning "Uncommitted changes found in worktree"
-        echo "Please commit your changes first, then run 'mcc done $task_name' again"
+        echo "Please commit your changes first, then run 'pod done $task_name' again"
         echo ""
         echo "To commit changes:"
         echo "  cd $worktree_dir"
@@ -357,8 +357,8 @@ Worktree: $worktree_dir"; then
     git branch -d "$branch_name"
     
     # Remove from active tasks
-    grep -v "^$task_name|" "$MCC_DIR/active_tasks.txt" > "$MCC_DIR/active_tasks.txt.tmp"
-    mv "$MCC_DIR/active_tasks.txt.tmp" "$MCC_DIR/active_tasks.txt"
+    grep -v "^$task_name|" "$POD_DIR/active_tasks.txt" > "$POD_DIR/active_tasks.txt.tmp"
+    mv "$POD_DIR/active_tasks.txt.tmp" "$POD_DIR/active_tasks.txt"
     
     log_success "Task '$task_name' completed and cleaned up"
 }
@@ -370,19 +370,19 @@ handoff_task() {
     
     if [[ -z "$task_name" ]]; then
         log_error "Task name is required"
-        echo "Usage: mcc handoff <task-name> [message]"
+        echo "Usage: pod handoff <task-name> [message]"
         exit 1
     fi
     
     check_git_repo
-    init_mcc
+    init_pod
     
     # Find task in active tasks
     local task_line
     local branch_name
     local worktree_dir
     
-    if ! task_line=$(grep "^$task_name|" "$MCC_DIR/active_tasks.txt"); then
+    if ! task_line=$(grep "^$task_name|" "$POD_DIR/active_tasks.txt"); then
         log_error "Task '$task_name' not found in active tasks"
         exit 1
     fi
@@ -429,7 +429,7 @@ Current status and next steps documented in TASK.md"
 # Clean up orphaned worktrees
 cleanup() {
     check_git_repo
-    init_mcc
+    init_pod
     
     log_info "Cleaning up orphaned worktrees and tasks..."
     
@@ -438,7 +438,7 @@ cleanup() {
     actual_worktrees=$(git worktree list --porcelain | grep '^worktree ' | cut -d' ' -f2-)
     
     # Clean up active_tasks.txt
-    local temp_file="$MCC_DIR/active_tasks.txt.tmp"
+    local temp_file="$POD_DIR/active_tasks.txt.tmp"
     > "$temp_file"
     
     while IFS='|' read -r task_name branch_name worktree_dir created_date; do
@@ -447,32 +447,32 @@ cleanup() {
         else
             log_warning "Removing orphaned task: $task_name"
         fi
-    done < "$MCC_DIR/active_tasks.txt"
+    done < "$POD_DIR/active_tasks.txt"
     
-    mv "$temp_file" "$MCC_DIR/active_tasks.txt"
+    mv "$temp_file" "$POD_DIR/active_tasks.txt"
     
     log_success "Cleanup completed"
 }
 
-# Update mcc to latest version
-update_mcc() {
-    log_info "Updating Multi-Claude-Code..."
+# Update pod to latest version
+update_pod() {
+    log_info "Updating ClaudePod..."
     
-    # Get the directory where mcc is located
-    local mcc_dir
-    mcc_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # Get the directory where pod is located
+    local pod_dir
+    pod_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     
     # Check if this is a git repository
-    if ! (cd "$mcc_dir" && git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
-        log_warning "mcc installation is not a git repository"
+    if ! (cd "$pod_dir" && git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
+        log_warning "pod installation is not a git repository"
         log_info "To update, manually download the latest version from:"
         log_info "https://github.com/DarrenZal/ClaudePod"
         return 1
     fi
     
     # Check if there are local changes
-    if (cd "$mcc_dir" && git status --porcelain | grep -q .); then
-        log_warning "Local changes detected in mcc installation directory"
+    if (cd "$pod_dir" && git status --porcelain | grep -q .); then
+        log_warning "Local changes detected in pod installation directory"
         echo "You have local modifications. Options:"
         echo "1. Stash changes and update"
         echo "2. Commit changes first"
@@ -481,11 +481,11 @@ update_mcc() {
         
         case $choice in
             1)
-                (cd "$mcc_dir" && git stash)
+                (cd "$pod_dir" && git stash)
                 log_info "Stashed local changes"
                 ;;
             2)
-                log_info "Please commit your changes first, then run 'mcc update' again"
+                log_info "Please commit your changes first, then run 'pod update' again"
                 return 1
                 ;;
             *)
@@ -497,7 +497,7 @@ update_mcc() {
     
     # Update from remote
     (
-        cd "$mcc_dir"
+        cd "$pod_dir"
         local current_version
         current_version=$(git rev-parse --short HEAD)
         
@@ -525,10 +525,10 @@ update_mcc() {
 # Show help
 show_help() {
     cat << EOF
-Multi-Claude-Code (mcc) - Manage parallel Claude development tasks
+ClaudePod - Manage parallel Claude development tasks
 
 USAGE:
-    mcc <command> [arguments]
+    pod <command> [arguments]
 
 COMMANDS:
     new, n <task-name>        Create new worktree and launch Claude Code
@@ -538,22 +538,22 @@ COMMANDS:
     done, d <task-name>       Complete task, merge, and cleanup
     handoff, h <task-name> [msg]  Create handoff commit with context
     cleanup, c                Clean up orphaned worktrees
-    update, up                Update mcc to latest version
+    update, up                Update pod to latest version
     help                      Show this help message
 
 EXAMPLES:
-    mcc new auth-system       # Start working on authentication
-    mcc yolo danger-zone      # Skip permissions (be careful!)
-    mcc list                  # See all active tasks
-    mcc handoff auth-system "Login flow completed"
-    mcc done auth-system      # Merge and cleanup when finished
-    mcc status                # Detailed overview
+    pod new auth-system       # Start working on authentication
+    pod yolo danger-zone      # Skip permissions (be careful!)
+    pod list                  # See all active tasks
+    pod handoff auth-system "Login flow completed"
+    pod done auth-system      # Merge and cleanup when finished
+    pod status                # Detailed overview
 
 WORKFLOW:
-    1. mcc new <task>         # Start new task
+    1. pod new <task>         # Start new task
     2. Work in Claude Code    # Develop in isolation
-    3. mcc handoff <task>     # Save progress/context
-    4. mcc done <task>        # Complete and merge
+    3. pod handoff <task>     # Save progress/context
+    4. pod done <task>        # Complete and merge
 
 For more information, see README.md
 EOF
@@ -584,14 +584,14 @@ main() {
             cleanup
             ;;
         "update"|"up")
-            update_mcc
+            update_pod
             ;;
         "help"|"--help"|"-h"|"")
             show_help
             ;;
         *)
             log_error "Unknown command: $1"
-            echo "Run 'mcc help' for usage information"
+            echo "Run 'pod help' for usage information"
             exit 1
             ;;
     esac
