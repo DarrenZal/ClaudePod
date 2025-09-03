@@ -1,20 +1,20 @@
-# ClaudePod 🚀
+# ClaudePod 🐋
 
-A comprehensive workflow system for managing multiple Claude Code instances working on parallel development tasks using git worktrees.
+A comprehensive workflow system for **orcas**trating multiple Claude Code instances working in coordinated pods on parallel development tasks using git worktrees.
 
 ## Overview
 
-ClaudePod allows you to run multiple Claude Code instances simultaneously, each working on different features in isolated git worktrees. This enables parallel development, reduces context switching, and maintains clean separation between different tasks.
+Just like orcas hunt in coordinated pods, ClaudePod **orcas**trates multiple Claude Code instances working simultaneously in isolated worktrees. Each Claude operates in its own pod (worktree), enabling intelligent parallel development, seamless coordination, and clean separation between different tasks.
 
 ### Key Features
 
-- **🔀 Git Worktree Isolation**: Each task runs in its own isolated worktree
-- **🪟 Terminal Integration**: Automatic Terminal.app window management on macOS  
-- **📋 Task Tracking**: Built-in progress tracking with TASK.md files
-- **🤝 Context Handoff**: Pass context between Claude instances via git commits
-- **🧹 Clean Workflow**: Automatic branch creation, merging, and cleanup
-- **⚡ Parallel Development**: Work on multiple features simultaneously
-- **🎯 Status Overview**: See all active work at a glance
+- **🐋 Pod Isolation**: Each Claude operates in its own isolated worktree pod
+- **🪟 Terminal **Orca**stration**: Automatic Terminal.app window management on macOS  
+- **📋 Task Coordination**: Built-in progress tracking with TASK.md files
+- **🤝 Context Handoff**: Seamless context passing between pod members via git commits
+- **🧹 Clean **Orca**nization**: Automatic branch creation, merging, and cleanup
+- **⚡ Parallel Intelligence**: Multiple Claude instances working in harmony
+- **🎯 Pod Status**: See all active pods and their coordination at a glance
 
 ## Quick Start
 
@@ -570,6 +570,6 @@ A: Yes, edit the `new_task()` function in the pod script to customize the templa
 
 ---
 
-**Happy Multi-Claude Development!** 🚀
+**Happy Pod **Orca**stration!** 🐋
 
-*Built for developers who want to maximize productivity with parallel Claude Code instances.*
+*Built for developers who want to maximize productivity with intelligent, coordinated Claude Code instances working in harmony.*
