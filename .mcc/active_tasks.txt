@@ -1,1 +1,2 @@
 test-feature|work/test-feature|../test-feature-worktree|2025-09-02 20:17:37
+test-yolo|work/test-yolo|../test-yolo-worktree|2025-09-02 20:44:33
