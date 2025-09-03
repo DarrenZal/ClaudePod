@@ -63,7 +63,27 @@ init_mcc() {
 
 # Get the main branch name
 get_main_branch() {
-    git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main"
+    # Try to get default branch from origin first
+    if git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@'; then
+        return
+    fi
+    
+    # Fallback to current branch if it's main/master
+    local current_branch
+    current_branch=$(git branch --show-current)
+    if [[ "$current_branch" == "main" || "$current_branch" == "master" ]]; then
+        echo "$current_branch"
+        return
+    fi
+    
+    # Check if main or master branches exist
+    if git show-ref --verify --quiet refs/heads/main; then
+        echo "main"
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "main"  # Default fallback
+    fi
 }
 
 # Generate unique branch name
@@ -148,12 +168,18 @@ EOF
     local abs_worktree_dir
     abs_worktree_dir=$(cd "$worktree_dir" && pwd)
     
-    osascript << EOF
+    # For testing, we'll simulate the Terminal launch
+    if [[ "${MCC_TEST_MODE:-}" == "1" ]]; then
+        log_info "TEST MODE: Would launch Terminal with command:"
+        log_info "cd '$abs_worktree_dir' && $CLAUDE_CMD"
+    else
+        osascript << EOF
 tell application "Terminal"
     do script "cd '$abs_worktree_dir' && echo 'Starting Claude Code for task: $task_name' && echo 'Branch: $branch_name' && echo 'Worktree: $abs_worktree_dir' && echo '' && $CLAUDE_CMD"
     set custom title of front window to "Claude: $task_name"
 end tell
 EOF
+    fi
     
     log_success "Created task '$task_name' in branch '$branch_name'"
     log_info "Opening Terminal window with Claude Code..."
