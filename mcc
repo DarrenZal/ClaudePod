@@ -442,6 +442,74 @@ cleanup() {
     log_success "Cleanup completed"
 }
 
+# Update mcc to latest version
+update_mcc() {
+    log_info "Updating Multi-Claude-Code..."
+    
+    # Get the directory where mcc is located
+    local mcc_dir
+    mcc_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
+    # Check if this is a git repository
+    if ! (cd "$mcc_dir" && git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
+        log_warning "mcc installation is not a git repository"
+        log_info "To update, manually download the latest version from:"
+        log_info "https://github.com/DarrenZal/ClaudePod"
+        return 1
+    fi
+    
+    # Check if there are local changes
+    if (cd "$mcc_dir" && git status --porcelain | grep -q .); then
+        log_warning "Local changes detected in mcc installation directory"
+        echo "You have local modifications. Options:"
+        echo "1. Stash changes and update"
+        echo "2. Commit changes first"
+        echo "3. Cancel update"
+        read -p "Choose (1-3): " choice
+        
+        case $choice in
+            1)
+                (cd "$mcc_dir" && git stash)
+                log_info "Stashed local changes"
+                ;;
+            2)
+                log_info "Please commit your changes first, then run 'mcc update' again"
+                return 1
+                ;;
+            *)
+                log_info "Update cancelled"
+                return 1
+                ;;
+        esac
+    fi
+    
+    # Update from remote
+    (
+        cd "$mcc_dir"
+        local current_version
+        current_version=$(git rev-parse --short HEAD)
+        
+        log_info "Current version: $current_version"
+        log_info "Fetching latest changes..."
+        
+        if git pull origin main; then
+            local new_version
+            new_version=$(git rev-parse --short HEAD)
+            
+            if [[ "$current_version" != "$new_version" ]]; then
+                log_success "Updated to version: $new_version"
+                log_info "Latest changes:"
+                git log --oneline "$current_version..$new_version"
+            else
+                log_success "Already up to date"
+            fi
+        else
+            log_error "Failed to update. Please check your connection and try again"
+            return 1
+        fi
+    )
+}
+
 # Show help
 show_help() {
     cat << EOF
@@ -457,6 +525,7 @@ COMMANDS:
     done, d <task-name>       Complete task, merge, and cleanup
     handoff, h <task-name> [msg]  Create handoff commit with context
     cleanup, c                Clean up orphaned worktrees
+    update, up                Update mcc to latest version
     help                      Show this help message
 
 EXAMPLES:
@@ -496,6 +565,9 @@ main() {
             ;;
         "cleanup"|"c")
             cleanup
+            ;;
+        "update"|"up")
+            update_mcc
             ;;
         "help"|"--help"|"-h"|"")
             show_help
