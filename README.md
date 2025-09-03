@@ -36,7 +36,7 @@ Multi-Claude-Code (mcc) allows you to run multiple Claude Code instances simulta
 # 1. Start a new task (creates worktree + opens Terminal)
 mcc new user-authentication
 # OR for dangerous permissions:
-# mcc new yolo user-authentication
+# mcc yolo user-authentication
 
 # This creates:
 # - New branch: work/user-authentication
@@ -108,7 +108,7 @@ cd ~/mcc
 | Command | Alias | Description | Example |
 |---------|-------|-------------|---------|
 | `mcc new <task>` | `n` | Create new worktree and launch Claude | `mcc new auth-system` |
-| `mcc new yolo <task>` | | Create task with --dangerously-skip-permissions | `mcc new yolo risky-task` |
+| `mcc yolo <task>` | | Create task with --dangerously-skip-permissions | `mcc yolo risky-task` |
 | `mcc list` | `ls` | List all active tasks | `mcc list` |
 | `mcc status` | `st` | Show detailed status overview | `mcc status` |
 | `mcc done <task>` | `d` | Complete, merge, and cleanup task | `mcc done auth-system` |
@@ -142,14 +142,14 @@ mcc new user-profile
 # Runs: claude (or your configured editor)
 ```
 
-#### `mcc new yolo <task-name>`
+#### `mcc yolo <task-name>`
 Special mode that creates a task and launches Claude with `--dangerously-skip-permissions`. Use this when you need Claude to have broader file system access.
 
 **⚠️ Warning:** YOLO mode skips permission checks - use carefully!
 
 **Example:**
 ```bash
-mcc new yolo system-config
+mcc yolo system-config
 # Creates: work/system-config branch  
 # Directory: ../system-config-worktree/
 # Opens: Terminal with "claude --dangerously-skip-permissions"

@@ -107,25 +107,18 @@ generate_branch_name() {
 # Create new worktree and launch Claude
 new_task() {
     local task_name="$1"
-    local yolo_mode="$2"
+    local yolo_mode="${2:-false}"
     
     if [[ -z "$task_name" ]]; then
         log_error "Task name is required"
         echo "Usage: mcc new <task-name>"
-        echo "       mcc new yolo <task-name>  # Skip permissions check"
         exit 1
     fi
     
     # Handle yolo mode
     local claude_args="$CLAUDE_ARGS"
-    if [[ "$task_name" == "yolo" ]]; then
-        if [[ -z "$yolo_mode" ]]; then
-            log_error "Task name is required after 'yolo'"
-            echo "Usage: mcc new yolo <task-name>"
-            exit 1
-        fi
+    if [[ "$yolo_mode" == "true" ]]; then
         claude_args="--dangerously-skip-permissions"
-        task_name="$yolo_mode"
         log_warning "YOLO MODE: Skipping permissions check!"
     fi
     
@@ -539,7 +532,7 @@ USAGE:
 
 COMMANDS:
     new, n <task-name>        Create new worktree and launch Claude Code
-    new yolo <task-name>      Create task with --dangerously-skip-permissions
+    yolo <task-name>          Create task with --dangerously-skip-permissions
     list, ls                  List all active tasks
     status, st                Show detailed status of all worktrees
     done, d <task-name>       Complete task, merge, and cleanup
@@ -550,7 +543,7 @@ COMMANDS:
 
 EXAMPLES:
     mcc new auth-system       # Start working on authentication
-    mcc new yolo danger-zone  # Skip permissions (be careful!)
+    mcc yolo danger-zone      # Skip permissions (be careful!)
     mcc list                  # See all active tasks
     mcc handoff auth-system "Login flow completed"
     mcc done auth-system      # Merge and cleanup when finished
@@ -570,7 +563,10 @@ EOF
 main() {
     case "${1:-}" in
         "new"|"n")
-            new_task "$2" "$3"
+            new_task "$2"
+            ;;
+        "yolo")
+            new_task "$2" "true"
             ;;
         "list"|"ls")
             list_tasks
