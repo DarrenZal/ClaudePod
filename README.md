@@ -35,6 +35,8 @@ Multi-Claude-Code (mcc) allows you to run multiple Claude Code instances simulta
 ```bash
 # 1. Start a new task (creates worktree + opens Terminal)
 mcc new user-authentication
+# OR for dangerous permissions:
+# mcc new yolo user-authentication
 
 # This creates:
 # - New branch: work/user-authentication
@@ -106,11 +108,13 @@ cd ~/mcc
 | Command | Alias | Description | Example |
 |---------|-------|-------------|---------|
 | `mcc new <task>` | `n` | Create new worktree and launch Claude | `mcc new auth-system` |
+| `mcc new yolo <task>` | | Create task with --dangerously-skip-permissions | `mcc new yolo risky-task` |
 | `mcc list` | `ls` | List all active tasks | `mcc list` |
 | `mcc status` | `st` | Show detailed status overview | `mcc status` |
 | `mcc done <task>` | `d` | Complete, merge, and cleanup task | `mcc done auth-system` |
 | `mcc handoff <task> [msg]` | `h` | Create context handoff commit | `mcc handoff auth-system "Login working"` |
 | `mcc cleanup` | `c` | Clean up orphaned worktrees | `mcc cleanup` |
+| `mcc update` | `up` | Update mcc to latest version | `mcc update` |
 | `mcc help` | | Show help and usage | `mcc help` |
 
 ### Command Details
@@ -126,8 +130,8 @@ Creates a new development task with:
 1. Creates isolated worktree directory
 2. Sets up new branch from your main/master branch
 3. Opens new Terminal window and navigates to worktree
-4. Attempts to run `claude-code` (install Claude Code CLI first)
-5. If Claude Code CLI isn't installed, you can manually run `claude` or your preferred editor
+4. Attempts to run `claude` (the Claude Code CLI command)
+5. If Claude CLI isn't installed, you can manually run your preferred editor
 
 **Example:**
 ```bash
@@ -135,7 +139,21 @@ mcc new user-profile
 # Creates: work/user-profile branch
 # Directory: ../user-profile-worktree/  
 # Opens: New Terminal in worktree directory
-# Run: claude, code ., vim ., etc. to start working
+# Runs: claude (or your configured editor)
+```
+
+#### `mcc new yolo <task-name>`
+Special mode that creates a task and launches Claude with `--dangerously-skip-permissions`. Use this when you need Claude to have broader file system access.
+
+**⚠️ Warning:** YOLO mode skips permission checks - use carefully!
+
+**Example:**
+```bash
+mcc new yolo system-config
+# Creates: work/system-config branch  
+# Directory: ../system-config-worktree/
+# Opens: Terminal with "claude --dangerously-skip-permissions"
+# Shows: Warning about YOLO mode
 ```
 
 #### `mcc list`
@@ -377,25 +395,28 @@ git worktree prune
 mcc new task-name-v2
 ```
 
-#### "Claude Code command not found"
-This is expected if you haven't installed the Claude Code CLI yet.
+#### "claude: command not found"
+This happens if the Claude CLI isn't installed or isn't in your PATH.
 
 **Solutions:**
 ```bash
-# Option 1: Install Claude Code CLI (when available)
-# Follow instructions at https://docs.anthropic.com/en/docs/claude-code
+# Option 1: Install Claude CLI
+# Download from: https://claude.ai/download
+# Or follow setup instructions for your system
 
-# Option 2: Use whatever command launches Claude Code for you
-# In the Terminal that opens, just run:
-claude        # If you have this command
+# Option 2: Use any editor in the Terminal that opens
+# The Terminal will be in the worktree directory, so just run:
+claude        # If you have Claude installed
 code .        # VS Code
 vim .         # Vim
 subl .        # Sublime Text
 # etc.
 
-# Option 3: Update mcc script with your command
+# Option 3: Update mcc script with your preferred command
 # Edit the CLAUDE_CMD variable in the mcc script:
-CLAUDE_CMD="claude"  # or whatever your command is
+CLAUDE_CMD="code"     # for VS Code
+CLAUDE_CMD="subl"     # for Sublime Text
+# etc.
 ```
 
 #### "Merge conflicts"
